@@ -1,0 +1,39 @@
+pipeline{
+    agent {
+        node {
+            label 'master'
+        }
+    }
+    options {
+        buildDiscarder(logRotator(numToKeepStr:'1'))
+        disableConcurrentBuilds()
+    }
+    stages{
+        stage('Build') {
+            steps {
+                sh "gradle clean build"
+            }
+        }
+        stage('Deploy Apps') {
+            steps {
+                sh "docker-compose up -d"
+            }
+        }
+        stage('Clean up') {
+            steps {
+                input "Exploratory Test"
+            }
+            post {
+                always {
+                    sh "docker-compose down"
+		            sh "docker rmi dc/sb-hw1"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            deleteDir()
+        }
+    }
+}
