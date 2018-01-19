@@ -25,8 +25,7 @@ pipeline{
             }
             post {
                 always {
-                    sh "docker-compose down"
-		            sh "docker rmi dc/sb-hw1"
+                    sh "docker-compose down -rmi all"
                 }
             }
         }
